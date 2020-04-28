@@ -33,6 +33,7 @@ func get_texture_index_for_name(name:String) -> int:
 	
 	if (index_in_dictionary < 0):
 		printerr("[Swatchd] get_texture_index_for_name couldn't find key: " + name)
+		return -1
 	
 	return colors.size() + index_in_dictionary
 
