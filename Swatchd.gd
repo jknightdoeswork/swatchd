@@ -4,6 +4,8 @@ class_name Swatchd
 
 export(Array, Color) var colors = [] setget set_colors
 export(Dictionary) var named_colors setget set_named_colors
+var override_colors := {}
+
 export(Texture) var texture
 
 func set_colors(colors_) -> void:
@@ -11,12 +13,15 @@ func set_colors(colors_) -> void:
 	clear_texture_cache()
 	emit_signal("changed")
 
-
 func set_named_colors(c) -> void:
 	named_colors = c
 	clear_texture_cache()
 	emit_signal("changed")
-	
+
+func override_named_colors(c) -> void:
+	override_colors = c
+	clear_texture_cache()
+	emit_signal("changed")
 
 func clear_texture_cache():
 	texture = null
@@ -55,7 +60,7 @@ func generate_texture() -> Texture:
 	var sorted_keys = named_colors.keys()
 	sorted_keys.sort()
 	for k in sorted_keys:
-		var named_color = named_colors.get(k)
+		var named_color = override_colors.get(k, named_colors.get(k))
 		assert(named_color is Color)
 		image.set_pixel(iterator, 0, named_color)
 		iterator += 1
@@ -66,4 +71,3 @@ func generate_texture() -> Texture:
 	tex.create_from_image(image)
 	tex.flags = 0
 	return tex
-
