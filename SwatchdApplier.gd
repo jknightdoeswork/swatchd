@@ -24,8 +24,8 @@ func apply_color_index() -> void:
 		apply_color(override_color)
 	elif swatch:
 		if color_name != null && !color_name.empty():
-			if swatch.named_colors.has(color_name):
-				var color = swatch.override_colors.get(color_name, swatch.named_colors.get(color_name))
+			if swatch.has_named_color(color_name):
+				var color = swatch.get_named_color(color_name)
 				assert(color is Color)
 				apply_color(color)
 				var texture_index = swatch.get_texture_index_for_name(color_name)

@@ -3,10 +3,27 @@ extends Resource
 class_name Swatchd
 
 export(Array, Color) var colors = [] setget set_colors
-export(Dictionary) var named_colors setget set_named_colors
-var override_colors := {}
-
+export(Dictionary) var named_colors:Dictionary setget set_named_colors
+export(Resource) var override_swatch:Resource setget set_override_swatch
 export(Texture) var texture
+
+func set_override_swatch(o:Resource):
+	if override_swatch != null:
+		override_swatch.disconnect("changed", self, "on_override_swatch_changed")
+	
+	if o != null:
+		# Check if the nested resource has the same script
+		if o.get_script() == get_script():
+			override_swatch = o
+			override_swatch.connect("changed", self, "on_override_swatch_changed")
+	else:
+		override_swatch = null
+	
+	on_override_swatch_changed()
+
+func on_override_swatch_changed():
+	clear_texture_cache()
+	emit_signal("changed")
 
 func set_colors(colors_) -> void:
 	colors = colors_
@@ -18,10 +35,13 @@ func set_named_colors(c) -> void:
 	clear_texture_cache()
 	emit_signal("changed")
 
-func override_named_colors(c) -> void:
-	override_colors = c
-	clear_texture_cache()
-	emit_signal("changed")
+func has_named_color(color_name:String) -> bool:
+	return named_colors.has(color_name)
+
+func get_named_color(color_name:String) -> Color:
+	if override_swatch != null and override_swatch.has_named_color(color_name):
+		return override_swatch.get_named_color(color_name)
+	return named_colors.get(color_name, Color.white)
 
 func clear_texture_cache():
 	texture = null
@@ -60,7 +80,7 @@ func generate_texture() -> Texture:
 	var sorted_keys = named_colors.keys()
 	sorted_keys.sort()
 	for k in sorted_keys:
-		var named_color = override_colors.get(k, named_colors.get(k))
+		var named_color = get_named_color(k)
 		assert(named_color is Color)
 		image.set_pixel(iterator, 0, named_color)
 		iterator += 1

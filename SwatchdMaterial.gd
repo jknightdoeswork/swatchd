@@ -14,7 +14,7 @@ func apply_texture_index() -> void:
 	# print ("[SwatchdMaterial] apply_texture_index")
 	if swatch:
 		if color_name != null && !color_name.empty():
-			if swatch.named_colors.has(color_name):
+			if swatch.has_named_color(color_name):
 				var texture_index = swatch.get_texture_index_for_name(color_name)
 				set_swatch_index(texture_index)
 			else:
