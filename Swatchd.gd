@@ -8,6 +8,9 @@ export(Resource) var override_swatch:Resource setget set_override_swatch
 export(Texture) var texture
 
 func set_override_swatch(o:Resource):
+	if o == override_swatch:
+		return
+	
 	if override_swatch != null:
 		override_swatch.disconnect("changed", self, "on_override_swatch_changed")
 	
